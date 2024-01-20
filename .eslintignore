@@ -1,0 +1,7 @@
+node_modules
+dist
+_unused
+tmp
+logs
+coverage
+.github
