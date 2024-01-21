@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Set the default environment variables when we run it via compose.
+    env_file:
+      - ./.env
+    restart: unless-stopped
+    container_name: ${APP_NAME}_web_app
+    networks:
+      - main_network
+    tty: true
+    # Expose the internal 5000 port, but do not specify host port mapping. Docker will map it as it pleases and
+    # prevent clashes to existing ports.
+    ports:
+      - ${APP_PORT}
+    links:
+      - rabbitmq
+      - mysql80
+
+  mysql80:
+    container_name: ${APP_NAME}_mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: basalt_service
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - main_network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "-uroot", "-proot", "status" ]
+      interval: 3s
+      timeout: 1s
+      retries: 10
+
+  rabbitmq:
+    # rabbitmq image with rabbitmq management ui
+    image: rabbitmq:management
+    container_name: ${APP_NAME}_rabbitmq
+    # set the rabbitmq username and password that will be used to connect to rabbitmq management ui
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    volumes:
+      - ./tmp/amqpStore:/data
+    ports:
+      # AMQP protocol port
+      - ${AMQP_SERVER_PORT}:${AMQP_SERVER_PORT}
+      # HTTP management UI
+      - '15672:15672'
+    networks:
+      - main_network
+
+  redis:
+    container_name: ${APP_NAME}_redis
+    image: redis
+    ports:
+      - "6379"
+    networks:
+      - main_network
+
+networks:
+  main_network:
+    driver: bridge
