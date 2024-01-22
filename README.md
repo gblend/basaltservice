@@ -60,7 +60,7 @@ To run tests, run the following command
 ```
 
 ## Documentation
-[Postman Collection URL](https://api.postman.com/collections/5135175-1041ccc2-a10a-409b-a82f-de477b3d3234?access_key=PMAT-01HMRJ3CBT4Q9ZPJRQC9R5KP7V): Import the collection in postman using the embedded url
+[Postman Collection URL](): Import the collection in postman using the url shared via email
 
 [Documentation](https://localhost:5000/api-docs): Navigate to ``https://localhost:5000/api-docs`` on your browser to view documentation
 
